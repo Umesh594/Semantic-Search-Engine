@@ -1,11 +1,11 @@
 from transformers import AutoTokenizer
 
-# Load once at module import
+
 _tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 
 def chunk_text(text: str, max_tokens: int = 500):
-    # Encode without special tokens to match token budgeting
+    
     tokens = _tokenizer.encode(text, add_special_tokens=False)
     chunks = []
 

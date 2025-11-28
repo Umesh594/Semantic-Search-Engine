@@ -12,8 +12,6 @@ interface ResultCardProps {
 
 const ResultCard = ({ index, score, content }: ResultCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  
-  // Truncate content for preview (show first 200 chars)
   const previewContent = content.length > 200 ? content.slice(0, 200) + "..." : content;
   const shouldShowToggle = content.length > 200;
 

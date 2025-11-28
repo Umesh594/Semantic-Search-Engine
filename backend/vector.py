@@ -1,35 +1,31 @@
-# backend/vector.py
-import os
 from typing import List, Dict, Any
-
 import weaviate
 from sentence_transformers import SentenceTransformer
+WEAVIATE_URL = "http://localhost:8090"
 
-WEAVIATE_URL = os.getenv( "http://localhost:8090")
 
-# initialize client lazily so import doesn't crash if Weaviate is down
 def _init_client():
     try:
-        # pass url explicitly
+       
         client = weaviate.Client(url=WEAVIATE_URL)
-        # quick ping
-        _ = client.is_ready()  # returns True/False or raises
+        
+        _ = client.is_ready()  
         return client
     except Exception as e:
-        # raise but keep it informative for higher-level code to handle.
+        
         raise RuntimeError(f"Could not connect to Weaviate at {WEAVIATE_URL}: {e}")
 
-# Embedding model (load once)
+
 try:
     model = SentenceTransformer("all-MiniLM-L6-v2")
 except Exception as e:
-    # If model fails to load, raise with helpful instruction
+    
     raise RuntimeError("Failed to load embedding model 'all-MiniLM-L6-v2'. "
                        "Ensure sentence-transformers is installed and you have internet to download the model: " + str(e))
 
 def init_schema() -> None:
     client = _init_client()
-    # define property schema for the class
+   
     html_chunk_class = {
         "class": "HtmlChunk",
         "vectorizer": "none",
@@ -45,7 +41,6 @@ def init_schema() -> None:
     existing = client.schema.get()
     existing_classes = [c.get("class") for c in existing.get("classes", [])] if existing else []
     if "HtmlChunk" not in existing_classes:
-        # create class in a way compatible with recent weaviate client APIs
         client.schema.create_class(html_chunk_class)
 
 def clear_index() -> None:
@@ -53,7 +48,6 @@ def clear_index() -> None:
     try:
         client.schema.delete_class("HtmlChunk")
     except Exception:
-        # ignore if it doesn't exist or delete fails
         pass
     init_schema()
 
