@@ -12,6 +12,5 @@ services:
     volumes:
       - weaviate_data:/var/lib/weaviate
     restart: unless-stopped
-
 volumes:
   weaviate_data:
